@@ -1,0 +1,280 @@
+.login-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+    font-family: 'Inter', sans-serif;
+    /* Stunning lively gradient background */
+    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #2e1065, #0b0f19);
+    background-size: 300% 300%;
+    animation: gradientBG 12s ease infinite;
+    overflow: hidden;
+    color: white;
+    /* ensure inherited text is white where not overridden */
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.login-left {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+    background-color: transparent;
+    z-index: 2;
+    /* higher than video */
+}
+
+/* Glassmorphism form wrapper for a premium feel */
+.login-form-wrapper {
+    width: 100%;
+    max-width: 440px;
+    animation: fadeIn 0.8s ease-out;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 3rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 2.5rem;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.login-brand:hover {
+    transform: translateY(-2px);
+}
+
+.brand-logo {
+    width: 32px;
+    height: 32px;
+}
+
+.login-header h2 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+}
+
+.login-header p {
+    color: #cbd5e1;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #64748b;
+}
+
+.form-group input:focus {
+    border-color: #818cf8;
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #cbd5e1;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.forgot-password {
+    color: #818cf8;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: #a5b4fc;
+}
+
+.btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.btn-google {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.login-footer a {
+    color: #818cf8;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+    color: #a5b4fc;
+}
+
+.login-right {
+    flex: 1.2;
+    position: relative;
+    display: none;
+    background-color: transparent;
+    z-index: 1;
+}
+
+@media (min-width: 1024px) {
+    .login-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+    }
+}
+
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+    /* Softly blend into the left side */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 40%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 40%);
+    opacity: 0.65;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Subtle overlay to tie the video into the theme */
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.4), rgba(99, 102, 241, 0.2));
+    z-index: 2;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.fade-edge {
+    /* Hide the old solid fade edge, we are using mask-image on video now */
+    display: none;
+}

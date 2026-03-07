@@ -1,0 +1,5 @@
+Collecting bcrypt
+  Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata (10 kB)
+Requirement already satisfied: passlib==1.7.4 in c:\users\surya\onedrive\desktop\projects\ai trascribe\backend\venv\lib\site-packages (1.7.4)
+Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl (150 kB)
+Installing collected packages: bcrypt

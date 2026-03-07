@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - TeamVoice AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            transition: var(--transition-smooth);
+        }
+
+        .pricing-card:hover {
+            border-color: var(--brand-accent);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .pricing-card.popular {
+            background: var(--bg-dark);
+            color: white;
+            border-color: transparent;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1rem 0;
+            color: var(--text-heading);
+        }
+
+        .popular .price {
+            color: white;
+        }
+
+        .period {
+            font-size: 1rem;
+            color: #a1a1aa;
+            font-weight: 500;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .popular .feature-list li {
+            color: #d1d5db;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                            fill="white" />
+                        <circle cx="12" cy="12" r="3" fill="#6366f1" />
+                    </svg>
+                </div>
+                <span class="brand-text">TeamVoice AI</span>
+            </a>
+            <div class="nav-links">
+                <a href="solutions.html" class="nav-link">Solutions</a>
+                <a href="index.html#product" class="nav-link">Product</a>
+                <a href="index.html#integrations" class="nav-link">Integrations</a>
+                <a href="pricing.html" class="nav-link" style="color:var(--brand-accent);">Pricing</a>
+                <a href="index.html#resources" class="nav-link">Resources</a>
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="btn btn-primary">Sign up for free</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="hero" style="padding-bottom: 2rem; min-height: 40vh;">
+        <div class="hero-container" style="grid-template-columns: 1fr; text-align: center;">
+            <div class="hero-content">
+                <h1 class="hero-title fade-in-up">Audio intelligence for <span class="text-gradient">every team</span>
+                </h1>
+                <p class="hero-subtitle fade-in-up" style="margin: 0 auto; margin-top: 1.5rem;">Start for free, upgrade
+                    when your team scales.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Grid -->
+    <section class="features" style="padding-top: 4rem; padding-bottom: 8rem;">
+        <div class="pricing-grid">
+            <div class="pricing-card reveal">
+                <h3>Basic</h3>
+                <div class="price">$0 <span class="period">/mo</span></div>
+                <p>Perfect for individuals starting with async voice tracking.</p>
+                <a href="#" class="btn"
+                    style="width: 100%; border: 1px solid var(--text-heading); margin-top: 1rem;">Get Started</a>
+                <ul class="feature-list">
+                    <li>✔️ 5 hours of audio / mo</li>
+                    <li>✔️ AI summaries</li>
+                    <li>✔️ Browser Extension</li>
+                </ul>
+            </div>
+
+            <div class="pricing-card popular reveal" style="transition-delay: 0.1s;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Pro</h3>
+                    <span class="pill">MOST POPULAR</span>
+                </div>
+                <div class="price">$19 <span class="period">/user/mo</span></div>
+                <p>For growing teams that need deeper contextual insights.</p>
+                <a href="#" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Start free trial</a>
+                <ul class="feature-list">
+                    <li>✔️ Unlimited audio uploads</li>
+                    <li>✔️ Desktop App & Mobile iOS App</li>
+                    <li>✔️ Custom AI vocabularies</li>
+                    <li>✔️ Jira & Slack Integrations</li>
+                </ul>
+            </div>
+
+            <div class="pricing-card reveal" style="transition-delay: 0.2s;">
+                <h3>Enterprise</h3>
+                <div class="price">Custom</div>
+                <p>Advanced security and custom LLM tuning for large organizations.</p>
+                <a href="#" class="btn"
+                    style="width: 100%; border: 1px solid var(--text-heading); margin-top: 1rem;">Contact Sales</a>
+                <ul class="feature-list">
+                    <li>✔️ Everything in Pro</li>
+                    <li>✔️ Dedicated instance</li>
+                    <li>✔️ Advanced SSO & SCIM</li>
+                    <li>✔️ Audit logs & Compliance</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

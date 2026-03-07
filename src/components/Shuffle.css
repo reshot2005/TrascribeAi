@@ -1,0 +1,47 @@
+.shuffle-parent {
+    display: inline-block;
+    white-space: normal;
+    word-wrap: break-word;
+    will-change: transform;
+    line-height: 1.1;
+    visibility: hidden;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: inherit;
+    color: inherit;
+}
+
+.shuffle-parent.is-ready {
+    visibility: visible;
+}
+
+.shuffle-char-wrapper {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: baseline;
+    position: relative;
+}
+
+.shuffle-char-wrapper>span {
+    display: inline-flex;
+    will-change: transform;
+}
+
+.shuffle-char {
+    line-height: inherit;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Explicit Gradient for Shuffle Text */
+.shuffle-gradient {
+    color: #a855f7;
+    /* Safe fallback */
+}
+
+.shuffle-gradient .shuffle-char-wrapper span {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
