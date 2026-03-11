@@ -36,6 +36,7 @@ const AdminDashboard = () => {
     const [uploadFile, setUploadFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [recFilter, setRecFilter] = useState('all');
+    const [transcriptViewMode, setTranscriptViewMode] = useState('dialogue'); // 'dialogue' or 'narrative'
 
     const mediaRecorderRef = useRef(null);
     const wsRef = useRef(null);
@@ -378,7 +379,80 @@ const AdminDashboard = () => {
                     </div>
                     {viewingTranscript.summary && (<div className="card" style={{ marginBottom: '1rem' }}><h3 style={{ marginBottom: '0.75rem' }}>📋 AI Summary</h3><p style={{ color: '#444', lineHeight: 1.7 }}>{viewingTranscript.summary}</p>{viewingTranscript.action_items?.length > 0 && (<div style={{ marginTop: '1rem' }}><h4 style={{ color: '#234e3d', marginBottom: '0.5rem' }}>✅ Action Items</h4><ul style={{ paddingLeft: '1.5rem', color: '#444' }}>{viewingTranscript.action_items.map((item, i) => <li key={i} style={{ marginBottom: '0.3rem' }}>{item}</li>)}</ul></div>)}</div>)}
                     {viewingTranscript.speaker_stats && Object.keys(viewingTranscript.speaker_stats).length > 0 && (<div className="card" style={{ marginBottom: '1rem' }}><h3 style={{ marginBottom: '0.75rem' }}>🎤 Speaker Statistics</h3><div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>{Object.entries(viewingTranscript.speaker_stats).map(([speaker, stats], idx) => (<div key={speaker} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.25rem', borderRadius: '12px', background: `${SPEAKER_COLORS[idx % SPEAKER_COLORS.length]}15`, border: `2px solid ${SPEAKER_COLORS[idx % SPEAKER_COLORS.length]}30` }}><div style={{ width: '12px', height: '12px', borderRadius: '50%', background: SPEAKER_COLORS[idx % SPEAKER_COLORS.length] }}></div><div><strong style={{ color: SPEAKER_COLORS[idx % SPEAKER_COLORS.length] }}>{speaker}</strong><p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>{stats.word_count} words · {stats.turn_count} turns · {formatTime(stats.total_time)}</p></div></div>))}</div></div>)}
-                    <div className="card"><h3 style={{ marginBottom: '1rem' }}>📝 Full Transcript</h3>{viewingTranscript.speakers?.length > 0 ? (<div style={{ lineHeight: 1.8 }}>{viewingTranscript.speakers.map((seg, i) => { const idx = parseInt(seg.speaker_label?.replace('SPEAKER_', '') || '0'); const color = SPEAKER_COLORS[idx % SPEAKER_COLORS.length]; return (<div key={i} style={{ marginBottom: '1rem', paddingLeft: '1rem', borderLeft: `3px solid ${color}` }}><div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}><span style={{ fontWeight: 'bold', color, fontSize: '0.85rem' }}>{seg.speaker_label || 'Speaker'}</span><span style={{ color: '#999', fontSize: '0.75rem' }}>[{formatTimestamp(seg.start)} - {formatTimestamp(seg.end)}]</span></div><p style={{ margin: 0, color: '#333' }}>{seg.words ? seg.words.map((w, wIdx) => { const hl = currentTime >= w.start && currentTime <= w.end; return <span key={wIdx} style={{ backgroundColor: hl ? '#bbf7d0' : 'transparent', color: hl ? '#166534' : 'inherit', borderRadius: '4px', padding: '0 2px', transition: 'all 0.1s' }}>{w.word}{' '}</span>; }) : seg.text}</p></div>); })}</div>) : (<p style={{ color: '#444', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{viewingTranscript.transcript_raw}</p>)}</div>
+
+                    <div className="card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h3 style={{ margin: 0 }}>📝 Transcript View</h3>
+                            <div className="view-toggle-buttons" style={{ display: 'flex', background: '#f3f4f6', padding: '4px', borderRadius: '12px' }}>
+                                <button
+                                    onClick={() => setTranscriptViewMode('dialogue')}
+                                    style={{ padding: '6px 16px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, background: transcriptViewMode === 'dialogue' ? 'white' : 'transparent', color: transcriptViewMode === 'dialogue' ? '#234e3d' : '#666', boxShadow: transcriptViewMode === 'dialogue' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Dialogue View
+                                </button>
+                                <button
+                                    onClick={() => setTranscriptViewMode('narrative')}
+                                    style={{ padding: '6px 16px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, background: transcriptViewMode === 'narrative' ? 'white' : 'transparent', color: transcriptViewMode === 'narrative' ? '#234e3d' : '#666', boxShadow: transcriptViewMode === 'narrative' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Narrative Mode
+                                </button>
+                            </div>
+                        </div>
+
+                        {viewingTranscript.speakers?.length > 0 ? (
+                            <div style={{ lineHeight: 1.8 }}>
+                                {viewingTranscript.speakers.map((seg, i) => {
+                                    const idx = parseInt(seg.speaker_label?.replace('SPEAKER_', '') || '0');
+                                    const color = SPEAKER_COLORS[idx % SPEAKER_COLORS.length];
+
+                                    if (transcriptViewMode === 'dialogue') {
+                                        return (
+                                            <div key={i} style={{ marginBottom: '1.25rem', paddingLeft: '1.25rem', borderLeft: `3px solid ${color}` }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                                                    <span style={{ fontWeight: 'bold', color, fontSize: '0.88rem' }}>{seg.speaker_label}</span>
+                                                    <span style={{ color: '#999', fontSize: '0.75rem' }}>[{formatTimestamp(seg.start)} - {formatTimestamp(seg.end)}]</span>
+                                                </div>
+                                                <p style={{ margin: 0, color: '#333', fontSize: '0.95rem' }}>
+                                                    {seg.words ? seg.words.map((w, wIdx) => {
+                                                        const hl = currentTime >= w.start && currentTime <= w.end;
+                                                        return <span key={wIdx} style={{ backgroundColor: hl ? '#bbf7d0' : 'transparent', color: hl ? '#166534' : 'inherit', borderRadius: '4px', padding: '0 2px', transition: 'all 0.1s' }}>{w.word}{' '}</span>;
+                                                    }) : seg.text}
+                                                </p>
+                                            </div>
+                                        );
+                                    } else {
+                                        // Narrative Mode: Paragraphs without labels
+                                        return (
+                                            <p key={i} style={{ marginBottom: '1rem', color: '#444', fontSize: '1rem', textAlign: 'justify' }}>
+                                                <span style={{ color: color, fontWeight: 700, marginRight: '8px' }}>•</span>
+                                                {seg.words ? seg.words.map((w, wIdx) => {
+                                                    const hl = currentTime >= w.start && currentTime <= w.end;
+                                                    return <span key={wIdx} style={{ backgroundColor: hl ? '#dcfce7' : 'transparent', color: hl ? '#166534' : 'inherit', borderRadius: '4px', padding: '0 2px' }}>{w.word}{' '}</span>;
+                                                }) : seg.text}
+                                            </p>
+                                        );
+                                    }
+                                })}
+                            </div>
+                        ) : (
+                            <div style={{ background: '#f9fafb', padding: '2rem', borderRadius: '16px', border: '1px dashed #e5e7eb' }}>
+                                <p style={{ color: '#444', lineHeight: 1.8, whiteSpace: 'pre-wrap', fontSize: '1.05rem', margin: 0 }}>
+                                    {viewingTranscript.transcript_raw}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {transcriptViewMode === 'narrative' && (
+                        <div className="card" style={{ marginTop: '1rem', borderTop: '4px solid #234e3d' }}>
+                            <h3 style={{ marginBottom: '1rem' }}>📄 Complete Narrative Text</h3>
+                            <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '1rem' }}>
+                                <p style={{ color: '#374151', lineHeight: 1.8, fontSize: '1.05rem', textAlign: 'justify' }}>
+                                    {viewingTranscript.transcript_raw || viewingTranscript.speakers?.map(s => s.text).join(' ')}
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </>
             );
         }

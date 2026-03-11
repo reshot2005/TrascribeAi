@@ -4,6 +4,15 @@ import './Dashboard.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000') + '/api';
 
+const SPEAKER_COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+
+const formatTimestamp = (sec) => {
+    if (!sec && sec !== 0) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+};
+
 const Dashboard = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('home');
@@ -13,6 +22,8 @@ const Dashboard = () => {
     const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
     const [newMemberData, setNewMemberData] = useState({ name: '', email: '' });
     const [isLoading, setIsLoading] = useState(false);
+    const [viewingTranscript, setViewingTranscript] = useState(null);
+    const [transcriptViewMode, setTranscriptViewMode] = useState('dialogue'); // 'dialogue' or 'narrative'
 
     const token = localStorage.getItem('token');
 
@@ -287,7 +298,7 @@ const Dashboard = () => {
                                         </div>
                                         <div>
                                             {rec.status === 'completed' ? (
-                                                <button className="select-btn" onClick={() => alert(rec.transcript_raw)}>View Transcript</button>
+                                                <button className="select-btn" onClick={() => setViewingTranscript(rec)}>View Transcript</button>
                                             ) : (
                                                 <span style={{ color: '#888', fontStyle: 'italic' }}>{rec.step}...</span>
                                             )}
@@ -391,6 +402,85 @@ const Dashboard = () => {
                                 <button type="submit" disabled={isLoading} style={{ padding: '0.8rem 1.5rem', border: 'none', background: '#234e3d', color: '#fff', borderRadius: '8px', cursor: 'pointer' }}>{isLoading ? 'Adding...' : 'Add Member'}</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {viewingTranscript && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    backdropFilter: 'blur(8px)'
+                }}>
+                    <div style={{ background: '#fff', padding: '2.5rem', borderRadius: '24px', width: '85%', maxWidth: '900px', height: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                            <div>
+                                <h2 style={{ margin: 0, fontSize: '1.8rem', fontFamily: 'Georgia, serif', color: '#111827' }}>{viewingTranscript.title}</h2>
+                                <p style={{ margin: '0.5rem 0 0', color: '#6b7280', fontSize: '0.95rem' }}>Duration: {formatTime(viewingTranscript.duration)} | Status: {viewingTranscript.status}</p>
+                            </div>
+                            <button
+                                onClick={() => setViewingTranscript(null)}
+                                style={{ background: '#f3f4f6', border: 'none', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', color: '#4b5563' }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', padding: '0.5rem', background: '#f9fafb', borderRadius: '16px' }}>
+                            <div style={{ display: 'flex', background: '#eee', padding: '4px', borderRadius: '10px' }}>
+                                <button
+                                    onClick={() => setTranscriptViewMode('dialogue')}
+                                    style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: transcriptViewMode === 'dialogue' ? 'white' : 'transparent', fontWeight: 600, boxShadow: transcriptViewMode === 'dialogue' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Dialogue View
+                                </button>
+                                <button
+                                    onClick={() => setTranscriptViewMode('narrative')}
+                                    style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: transcriptViewMode === 'narrative' ? 'white' : 'transparent', fontWeight: 600, boxShadow: transcriptViewMode === 'narrative' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}
+                                >
+                                    Narrative View
+                                </button>
+                            </div>
+                            <span style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                                {transcriptViewMode === 'dialogue' ? "Showing speaker turns with labels." : "Showing continuous text in paragraphs."}
+                            </span>
+                        </div>
+
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '16px', background: '#fff' }}>
+                            {viewingTranscript.speakers?.length > 0 ? (
+                                <div>
+                                    {viewingTranscript.speakers.map((seg, i) => {
+                                        const idx = parseInt(seg.speaker_label?.replace('SPEAKER_', '') || '0');
+                                        const color = SPEAKER_COLORS[idx % SPEAKER_COLORS.length];
+
+                                        if (transcriptViewMode === 'dialogue') {
+                                            return (
+                                                <div key={i} style={{ marginBottom: '1.5rem', paddingLeft: '1rem', borderLeft: `4px solid ${color}` }}>
+                                                    <div style={{ marginBottom: '0.4rem' }}>
+                                                        <span style={{ fontWeight: 800, color, fontSize: '0.9rem' }}>{seg.speaker_label}</span>
+                                                        <span style={{ marginLeft: '1rem', color: '#9ca3af', fontSize: '0.8rem' }}>{formatTimestamp(seg.start)}</span>
+                                                    </div>
+                                                    <p style={{ margin: 0, color: '#1f2937', lineHeight: 1.7, fontSize: '1rem' }}>{seg.text}</p>
+                                                </div>
+                                            );
+                                        } else {
+                                            return (
+                                                <p key={i} style={{ margin: '0 0 1.25rem 0', color: '#374151', lineHeight: 1.8, fontSize: '1.1rem', textAlign: 'justify' }}>
+                                                    <span style={{ color: color, fontWeight: 'bold', marginRight: '0.5rem' }}>•</span>
+                                                    {seg.text}
+                                                </p>
+                                            );
+                                        }
+                                    })}
+                                </div>
+                            ) : (
+                                <p style={{ color: '#374151', lineHeight: 1.8, fontSize: '1.1rem', whiteSpace: 'pre-wrap' }}>{viewingTranscript.transcript_raw}</p>
+                            )}
+                        </div>
+
+                        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button onClick={() => setViewingTranscript(null)} style={{ padding: '0.75rem 2rem', background: '#234e3d', color: '#fff', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Close</button>
+                        </div>
                     </div>
                 </div>
             )}

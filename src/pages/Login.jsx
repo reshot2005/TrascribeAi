@@ -16,14 +16,19 @@ const Login = () => {
         setError('');
         setLoading(true);
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
         try {
             const res = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email: email.trim(), password }),
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
 
             const data = await res.json();
 
@@ -32,7 +37,7 @@ const Login = () => {
                 localStorage.setItem('token', data.data.token);
 
                 // Redirect based on role
-                const userRole = data.data.user.role;
+                const userRole = data.data.user?.role;
                 if (userRole === 'admin') {
                     navigate('/admin-dashboard');
                 } else if (userRole === 'hr') {
@@ -45,7 +50,12 @@ const Login = () => {
                 setError(data.message || 'Login failed. Please check your credentials.');
             }
         } catch (err) {
-            setError('Network error. Please try again later.');
+            clearTimeout(timeoutId);
+            if (err.name === 'AbortError') {
+                setError('Connection timed out. Ensure the backend server is running.');
+            } else {
+                setError('Network error. Ensure the backend server is running on port 8000.');
+            }
             console.error("Login error:", err);
         } finally {
             setLoading(false);
