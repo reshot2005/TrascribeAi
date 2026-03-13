@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000') + '/api';
+const API_BASE = import.meta.env.VITE_API_URL ? (import.meta.env.VITE_API_URL.endsWith('/api') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/api`) : 'http://localhost:8000/api';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,7 +17,9 @@ const Login = () => {
         setLoading(true);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        // 60s timeout: Render free tier can take 50+ seconds to wake from sleep
+        const timeoutMs = 60000;
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         try {
             const res = await fetch(`${API_BASE}/auth/login`, {
@@ -52,9 +54,9 @@ const Login = () => {
         } catch (err) {
             clearTimeout(timeoutId);
             if (err.name === 'AbortError') {
-                setError('Connection timed out. Ensure the backend server is running.');
+                setError('Server is waking up and took too long. Please wait a moment and try again.');
             } else {
-                setError('Network error. Ensure the backend server is running on port 8000.');
+                setError('Network error. Please check your connection and try again.');
             }
             console.error("Login error:", err);
         } finally {
@@ -116,7 +118,7 @@ const Login = () => {
                         </div>
 
                         <button type="submit" className="btn btn-login" disabled={loading}>
-                            {loading ? 'Signing in...' : 'Sign in'}
+                            {loading ? 'Signing in... (may take up to a minute)' : 'Sign in'}
                         </button>
                     </form>
 

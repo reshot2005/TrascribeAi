@@ -6,7 +6,8 @@ from datetime import datetime
 from app.database.mongodb import get_db
 
 from app.utils.audio_processing import preprocess_audio
-from app.services.whisper_service import transcribe_audio, detect_speakers_by_energy
+from app.services.whisper_service import transcribe_audio
+from app.services.diarization_service import diarize_audio
 from app.services.merge_service import merge_whisper_and_diarization
 from app.services.summary_service import generate_summary
 from app.websocket.notifications import notification_manager
@@ -40,15 +41,15 @@ async def run_pipeline(recording_id: str, raw_audio_path):
         processed_audio_path = await preprocess_audio(raw_audio_path)
         logger.info(f"Preprocessed audio: {processed_audio_path}")
         
-        # STEP 2: Transcribe with Google Speech Recognition
+        # STEP 2: Transcribe with Faster-Whisper
         await update_status(db, recording_id, "transcription", user_id=user_id)
         whisper_result = transcribe_audio(str(processed_audio_path))
         logger.info(f"Transcription complete: {len(whisper_result['transcript_raw'])} chars")
         
-        # STEP 3: Speaker diarization (energy-based)
+        # STEP 3: Deep Speaker Diarization (Pyannote)
         await update_status(db, recording_id, "diarization", user_id=user_id)
         try:
-            speaker_turns = detect_speakers_by_energy(str(processed_audio_path), num_speakers=2)
+            speaker_turns = diarize_audio(str(processed_audio_path))
         except Exception as e:
             logger.error(f"Diarization failed: {e}. Falling back to single speaker.")
             speaker_turns = [{"speaker": "SPEAKER_00", "start": 0.0, "end": whisper_result["duration"]}]
@@ -56,6 +57,7 @@ async def run_pipeline(recording_id: str, raw_audio_path):
         # STEP 4: Merge transcription with speaker turns
         await update_status(db, recording_id, "merge", user_id=user_id)
         merged_data = merge_whisper_and_diarization(whisper_result["word_timestamps"], speaker_turns)
+
         
         # STEP 5: Generate summary & action items
         await update_status(db, recording_id, "summary", user_id=user_id)

@@ -22,7 +22,12 @@ class Settings(BaseSettings):
     
     REDIS_URL: str = "redis://localhost:6379"
     
-    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173,https://trascribe-ai.vercel.app"
+
+    # AI Model Settings
+    WHISPER_MODEL: str = "base" # tiny, base, small, medium, large-v3
+    DIARIZATION_MODEL: str = "pyannote/speaker-diarization-3.1"
+
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
     
